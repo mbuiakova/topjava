@@ -25,22 +25,15 @@ public class DataJpaMealRepository implements MealRepository {
     @Override
     public Meal save(Meal meal, int userId) {
         if(!meal.isNew()){
-            Meal updated = get(meal.id(), userId);
-            if(updated == null){
+            Meal current = get(meal.id(), userId);
+            if(current == null){
                 return null;
             }else {
-                meal.setUser(updated.getUser());
+                meal.setUser(current.getUser());
             }
         }else {
             User user = new User();
             user.setId(userId);
-//            try {
-//                Method method = DataJpaUserRepository.class.getMethod("get", int.class);
-//                Object o = method.invoke(DataJpaUserRepository., userId);
-//                user = (User) o;
-//            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-//                e.printStackTrace();
-//            }
             meal.setUser(user);
         }
         return crudRepository.save(meal);

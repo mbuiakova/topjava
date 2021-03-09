@@ -14,7 +14,6 @@ public class DataJpaUserRepository implements UserRepository {
     private final CrudUserRepository crudRepository;
 
     public DataJpaUserRepository(CrudUserRepository crudRepository) {
-        System.out.println("DataJpa");
         this.crudRepository = crudRepository;
     }
 
