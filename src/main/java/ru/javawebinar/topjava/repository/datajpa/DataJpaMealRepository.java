@@ -17,33 +17,26 @@ import java.util.Optional;
 public class DataJpaMealRepository implements MealRepository {
 
     private final CrudMealRepository crudRepository;
+    private final CrudUserRepository userRepository;
 
-    public DataJpaMealRepository(CrudMealRepository crudRepository) {
+    public DataJpaMealRepository(CrudMealRepository crudRepository, CrudUserRepository userRepository) {
         this.crudRepository = crudRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public Meal save(Meal meal, int userId) {
-        if(!meal.isNew()){
-            Meal current = get(meal.id(), userId);
-            if(current == null){
-                return null;
-            }else {
-                meal.setUser(current.getUser());
-            }
-        }else {
-            User user = new User();
-            user.setId(userId);
-            meal.setUser(user);
+        if (!meal.isNew() && get(meal.id(), userId) == null) {
+            return null;
         }
+        meal.setUser(userRepository.getOne(userId));
         return crudRepository.save(meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        Meal m = get(id, userId);
-        if(m == null){
-            throw new NotFoundException("the food is wrong");
+        if (get(id, userId) == null) {
+            return false;
         }
         return crudRepository.delete(id) != 0;
     }
