@@ -28,41 +28,45 @@ public class JspMealController extends AbstractMealController {
         super.service = mealService;
     }
 
+    @GetMapping("/createOrUpdateMeal")
+    public String createOrUpdateMeal(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
+        request.setCharacterEncoding("UTF-8");
+        String idString = request.getParameter("id");
+        Meal meal = null;
+
+        if (idString == null) {
+            meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
+        } else {
+            meal = super.get(Integer.parseInt(idString));
+        }
+
+        model.addAttribute("meal", meal);
+        return "/mealForm";
+    }
+
+    @GetMapping("/deleteMeal")
+    public String deleteMeal(@RequestParam("id") int id) {
+        super.delete(id);
+        return "redirect:meals";
+    }
+
+    @GetMapping("/filterMeal")
+    public String filterMeal(HttpServletRequest request, Model model) {
+        LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
+        LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
+        LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
+        LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
+        List<MealTo> meals = super.getBetween(startDate, startTime, endDate, endTime);
+        model.addAttribute("meals", meals);
+        return "/meals";
+    }
+
     @GetMapping("/meals")
     public String get(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
         request.setCharacterEncoding("UTF-8");
-        String action = request.getParameter("action");
-
-        switch (action == null ? "all" : action) {
-            case "delete" -> {
-                int meal_id = Integer.parseInt(request.getParameter("id"));
-                super.delete(meal_id);
-                return "redirect:meals";
-            }
-            case "update", "create" -> {
-                final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
-                        super.get(Integer.parseInt(request.getParameter("id")));
-                model.addAttribute("meal", meal);
-                return "/mealForm";
-            }
-            case "filter" -> {
-                LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
-                LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
-                LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
-                LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
-                List<MealTo> meals = super.getBetween(startDate, startTime, endDate, endTime);
-//                request.setAttribute("meals", meals);
-                model.addAttribute("meals", meals);
-                return "/meals";
-            }
-            default -> {
-                List<MealTo> meals = super.getAll();
-                //request.setAttribute("meals", meals);
-                model.addAttribute("meals", meals);
-                return "/meals";
-            }
-        }
+        List<MealTo> meals = super.getAll();
+        model.addAttribute("meals", meals);
+        return "/meals";
     }
 
     @PostMapping("/meals")
