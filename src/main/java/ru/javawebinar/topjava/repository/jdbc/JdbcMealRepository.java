@@ -10,9 +10,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.ValidationUtil;
 
+import javax.validation.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class JdbcMealRepository implements MealRepository {
@@ -25,6 +28,8 @@ public class JdbcMealRepository implements MealRepository {
 
     private final SimpleJdbcInsert insertMeal;
 
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
     public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertMeal = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("meals")
@@ -36,6 +41,8 @@ public class JdbcMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
+        ValidationUtil.validateObject(meal);
+        ValidationUtil.validateObject(userId);
         MapSqlParameterSource map = new MapSqlParameterSource()
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
@@ -59,11 +66,15 @@ public class JdbcMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
+        ValidationUtil.validateObject(id);
+        ValidationUtil.validateObject(userId);
         return jdbcTemplate.update("DELETE FROM meals WHERE id=? AND user_id=?", id, userId) != 0;
     }
 
     @Override
     public Meal get(int id, int userId) {
+        ValidationUtil.validateObject(id);
+        ValidationUtil.validateObject(userId);
         List<Meal> meals = jdbcTemplate.query(
                 "SELECT * FROM meals WHERE id = ? AND user_id = ?", ROW_MAPPER, id, userId);
         return DataAccessUtils.singleResult(meals);
@@ -71,6 +82,7 @@ public class JdbcMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
+        ValidationUtil.validateObject(userId);
         return jdbcTemplate.query(
                 "SELECT * FROM meals WHERE user_id=? ORDER BY date_time DESC", ROW_MAPPER, userId);
     }
