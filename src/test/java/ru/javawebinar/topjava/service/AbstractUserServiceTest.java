@@ -32,13 +32,10 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired(required = false)
     protected JpaUtil jpaUtil;
 
-    @Autowired
-    private Environment environment;
-
     @Before
     public void setup() {
         cacheManager.getCache("users").clear();
-        if (!Arrays.asList(environment.getActiveProfiles()).contains("jdbc")) {
+        if (!Arrays.asList(super.environment.getActiveProfiles()).contains("jdbc")) {
             jpaUtil.clear2ndLevelHibernateCache();
         }
     }
@@ -102,7 +99,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void createWithException() throws Exception {
-        //Assume.assumeFalse(Arrays.asList(environment.getActiveProfiles()).contains("jdbc"));
+        //checkJDBCProfile();
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "  ", "mail@yandex.ru", "password", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "  ", "password", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.USER)));

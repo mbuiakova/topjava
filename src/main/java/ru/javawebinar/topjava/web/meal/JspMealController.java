@@ -33,13 +33,11 @@ public class JspMealController extends AbstractMealController {
         request.setCharacterEncoding("UTF-8");
         String idString = request.getParameter("id");
         Meal meal = null;
-
         if (idString == null) {
             meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
         } else {
             meal = super.get(Integer.parseInt(idString));
         }
-
         model.addAttribute("meal", meal);
         return "/mealForm";
     }
@@ -76,14 +74,12 @@ public class JspMealController extends AbstractMealController {
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
-
         if (StringUtils.hasLength(request.getParameter("id"))) {
             super.update(meal, Integer.parseInt(request.getParameter("id")));
         } else {
             super.create(meal);
         }
         return "redirect:meals";
-
     }
 
 
