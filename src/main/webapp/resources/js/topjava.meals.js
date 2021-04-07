@@ -5,7 +5,7 @@ const ctx = {
     ajaxUrl: mealAjaxUrl
 };
 
-function saveMeal(){
+function saveMeal() {
     const data = {
         // 1. "tag"
         // 2. ".class"
@@ -30,37 +30,65 @@ function saveMeal(){
     });
 }
 
-function deleteMeal(id){
+function deleteMeal(id) {
     $.ajax({
         type: "DELETE",
         url: mealAjaxUrl + "/" + id,
-        success: function (){
-            window.location.replace(window.location.href);
+        success: function () {
+            //window.location.replace(window.location.href);
+            updateTable();
         }
+    });
+}
+
+function setFilter() {
+    const data = {
+        startDate: $("#startDate").val(),
+        startTime: $("#startTime").val(),
+        endDate: $("#endDate").val(),
+        endTime: $("#endTime").val()
+    };
+
+    $.ajax({
+        type: "GET",
+        url: mealAjaxUrl + "/filter",
+        data: data,
+        success: function (data) {
+            //callback
+            updateTable();
+        },
+    });
+}
+
+function resetFilter() {
+    $.ajax({
+        type: "GET",
+        url: mealAjaxUrl + "/filter",
+        success: function () {
+            $("#filterStartDate").val("");
+            $("#filterEndDate").val("");
+            $("#filterStartTime").val("");
+            $("#filterEndTime").val("");
+            updateTable();
+        },
     });
 }
 
 // $(document).ready(function () {
 $(function () {
     makeEditable(
-        $("#datatable").DataTable({
+        $("#mealdatatable").DataTable({
             "paging": false,
             "info": true,
             "columns": [
                 {
-                    "data": "name"
+                    "data": "dateTime"
                 },
                 {
-                    "data": "email"
+                    "data": "description"
                 },
                 {
-                    "data": "roles"
-                },
-                {
-                    "data": "enabled"
-                },
-                {
-                    "data": "registered"
+                    "data": "calories"
                 },
                 {
                     "defaultContent": "Edit",

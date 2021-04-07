@@ -5,6 +5,21 @@ const ctx = {
     ajaxUrl: userAjaxUrl
 };
 
+function setEnable(id, enabled){
+    const data = {
+        enabled: enabled
+    };
+
+    $.ajax({
+        type: "POST",
+        url: userAjaxUrl + "enabled/" + id,
+        data: data,
+        success: function (data) {
+            updateTable();
+        },
+    });
+}
+
 // $(document).ready(function () {
 $(function () {
     makeEditable(

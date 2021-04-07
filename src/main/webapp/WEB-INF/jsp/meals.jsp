@@ -12,24 +12,25 @@
 <section>
     <h3><spring:message code="meal.title"/></h3>
 
-    <form method="get" action="meals/filter">
+    <form method="get" action="meals/filter" id="filterForm">
         <dl>
             <dt><spring:message code="meal.startDate"/>:</dt>
-            <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
+            <dd><input type="date" id="filterStartDate" name="startDate" value="${param.startDate}"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.endDate"/>:</dt>
-            <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
+            <dd><input type="date" id="filterEndDate" name="endDate" value="${param.endDate}"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.startTime"/>:</dt>
-            <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
+            <dd><input type="time" id="filterStartTime" name="startTime" value="${param.startTime}"></dd>
         </dl>
         <dl>
             <dt><spring:message code="meal.endTime"/>:</dt>
-            <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
+            <dd><input type="time" id="filterEndTime" name="endTime" value="${param.endTime}"></dd>
         </dl>
-        <button type="submit"><spring:message code="meal.filter"/></button>
+        <button type="submit" class="btn btn-primary"><spring:message code="meal.filter"/></button>
+        <button type="button" class="btn btn-secondary" onclick="resetFilter()"><spring:message code="meal.resetFilter"/></button>
     </form>
 
 
@@ -38,7 +39,7 @@
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddMeal" onclick="$('#modalAddMeal').modal('show')">
         <spring:message code="meal.add"/>
     </button>
-    <%--!!!!!!!!!!!--%>
+
     <div class="modal fade" id="modalAddMeal" tabindex="-1" role="dialog" aria-labelledby="addMealLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -65,12 +66,7 @@
     </div>
     <br/>
 
-    <%--!!!!!!!!!!!--%>
-
-
-
-
-    <table border="1" cellpadding="8" cellspacing="0">
+    <table class="table table-striped" id="mealdatatable">
         <thead>
         <tr>
             <th><spring:message code="meal.dateTime"/></th>
@@ -91,7 +87,7 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="meals/update?id=${meal.id}"><spring:message code="common.update"/></a></td>
+                <td><a href="meals/update?id=${meal.id}"><span class="fa fa-pencil"></span></a></td>
 <%--                <td><a href="meals/delete?id=${meal.id}"><spring:message code="common.delete"/></a></td>--%>
                 <td><a class="delete"><span class="fa fa-remove" onclick="deleteMeal(${meal.id})"></span></a></td>
             </tr>
